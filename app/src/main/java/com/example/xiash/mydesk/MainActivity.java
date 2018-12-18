@@ -2,14 +2,12 @@ package com.example.xiash.mydesk;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.WindowManager;
+import android.view.KeyEvent;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,15 +23,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             startActivity(intent);
         }
-
+        else
         {
             intent = new Intent(MainActivity.this, ListeningService.class);
             startService(intent);
         }
 
-//        if (intent != null) {
-//            stopService(intent);
-//        }
+
     }
     //if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && accessibilityEvent.getPackageName().equals("com.android.systemui")&&(accessibili‌​tyEvent.getClassName().equals("com.android.systemui.statusbar.phone.PhoneStatusBa‌​r$ExpandedDialog")|| accessibilityEvent.getClassName().equals("android.widget.FrameLayout")||acc‌​essibilityEvent.getClassName().equals("com.android.systemui.statusbar.StatusBarSe‌​rvice$ExpandedDialog"))){
     //    // 你的代码
@@ -43,6 +39,28 @@ public class MainActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
         super.onWindowFocusChanged(hasFocus);
         //sendBroadcast(new Intent("android.intent.action.CLOSE_SYSTEM_DIALOGS"));
+    }
+
+    @Override
+    public  void onResume()
+    {
+        if (isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
+            if (intent != null) {
+                stopService(intent);
+            }
+            intent = new Intent(MainActivity.this, ListeningService.class);
+            startService(intent);
+        }
+        super.onResume();
+    }
+    @Override
+    public boolean onKeyDown(int keyCode,KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            //exit();
+            return false;
+        }
+        else
+        return super.onKeyDown(keyCode,event);
     }
     //禁止下拉
 //    private void prohibitDropDown() {

@@ -21,7 +21,7 @@ public class ListeningService extends AccessibilityService {
         super.onServiceConnected();
         AccessibilityServiceInfo config = new AccessibilityServiceInfo();
         //配置监听的事件类型为界面变化|点击事件
-        config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_VIEW_CLICKED;
+        config.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;//AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_VIEW_CLICKED;
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
         if (Build.VERSION.SDK_INT >= 16) {
             config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
@@ -31,17 +31,22 @@ public class ListeningService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+       // if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
 //                && event.getPackageName().equals("com.android.systemui")
 //                &&(event.getClassName().equals("com.android.systemui.statusbar.phone.PhoneStatusBa‌​r$ExpandedDialog")
 //                    || event.getClassName().equals("android.widget.FrameLayout")
 //                    ||event.getClassName().equals("com.android.systemui.statusbar.StatusBarSe‌​rvice$ExpandedDialog")
 //                   )
-                )
+ //               )
+
         {
             sendBroadcast(new Intent("android.intent.action.CLOSE_SYSTEM_DIALOGS"));
         }
 
+//        if(event.getPackageName().equals("com.android.setting"))
+//        {
+//            performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+//        }
 //        AccessibilityNodeInfo nodeInfo = event.getSource();//当前界面的可访问节点信息
 //        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {//界面变化事件
 //            ComponentName componentName = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
