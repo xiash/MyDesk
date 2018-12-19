@@ -46,15 +46,15 @@ public class MainActivity extends AppCompatActivity {
         fillData();
 
 
-//        if (!isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
-//            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-//            startActivity(intent);
-//        }
-//        else
-//        {
-//            intent = new Intent(MainActivity.this, ListeningService.class);
-//            startService(intent);
-//        }
+        if (!isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
+            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            startActivity(intent);
+        }
+        else
+        {
+            intent = new Intent(MainActivity.this, ListeningService.class);
+            startService(intent);
+        }
 //        gotoSetting();
     }
 
@@ -68,13 +68,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public  void onResume()
     {
-//        if (isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
-//            if (intent != null) {
-//                stopService(intent);
-//            }
-//            intent = new Intent(MainActivity.this, ListeningService.class);
-//            startService(intent);
-//        }
+        if (isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
+            if (intent != null) {
+                stopService(intent);
+            }
+            intent = new Intent(MainActivity.this, ListeningService.class);
+            startService(intent);
+        }
         super.onResume();
     }
     @Override
