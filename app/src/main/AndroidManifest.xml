@@ -17,6 +17,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -36,6 +37,7 @@
                 android:resource="@xml/accessibilityservice" />
         </service>
 
+        <activity android:name=".AppSetting"></activity>
     </application>
 
 </manifest>

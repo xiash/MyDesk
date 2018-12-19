@@ -27,6 +27,7 @@ public class ListeningService extends AccessibilityService {
             config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
         }
         setServiceInfo(config);
+
     }
 
     @Override
