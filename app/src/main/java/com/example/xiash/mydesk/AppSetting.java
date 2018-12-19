@@ -3,11 +3,13 @@ package com.example.xiash.mydesk;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
@@ -26,7 +28,8 @@ public class AppSetting extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_setting);
-        gridView = (GridView) findViewById(R.id.gridview);
+
+        gridView = (GridView) findViewById(R.id.gridApp);
         pm=this.getPackageManager();
         appList.queryFilterAppInfo(pm);
         fillData();
@@ -40,10 +43,28 @@ public class AppSetting extends AppCompatActivity {
 
         int[] to = new int[]{R.id.img, R.id.text};
 
-        adapter = new SimpleAdapter(this, dataList, R.layout.gridview_item, from, to);
+        gridview_button_adapter adapter = new gridview_button_adapter(this, dataList);
 
-        gridView.setAdapter(adapter);
-
+//        adapter = new SimpleAdapter(this, dataList, R.layout.gridview_button_item, from, to);
+//
+//        adapter.setViewBinder(new SimpleAdapter.ViewBinder() {
+//            @Override
+//            public boolean setViewValue(View view, Object data, String arg2) {
+//                if(view instanceof ImageView && data instanceof Drawable){
+//                    ImageView iv = (ImageView)view;
+//                    iv.setImageDrawable((Drawable)data);
+//                    return true;
+//                }else{
+//                    return false;
+//                }
+//            }
+//        });
+        try {
+            gridView.setAdapter(adapter);
+        }
+        catch (Exception e){
+            String str= e.getMessage();
+        }
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
