@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         gridView = (GridView) findViewById(R.id.gridApp);
         pm=this.getPackageManager();
         appList.queryFilterAppInfo(pm);
-       // fillData();
+        fillData();
 
 
 //        if (!isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 //            intent = new Intent(MainActivity.this, ListeningService.class);
 //            startService(intent);
 //        }
-        gotoSetting();
+//        gotoSetting();
     }
 
     @Override
@@ -139,6 +141,18 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new SimpleAdapter(this, dataList, R.layout.gridview_item, from, to);
 
+        adapter.setViewBinder(new SimpleAdapter.ViewBinder() {
+            @Override
+            public boolean setViewValue(View view, Object data, String arg2) {
+                if(view instanceof ImageView && data instanceof Drawable){
+                    ImageView iv = (ImageView)view;
+                    iv.setImageDrawable((Drawable)data);
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        });
         try {
             gridView.setAdapter(adapter);
         }
@@ -168,8 +182,9 @@ public class MainActivity extends AppCompatActivity {
                 continue;
             }
             String str_name = appInfo.loadLabel(pm).toString();
+            Drawable drawable=appInfo.loadIcon(pm);
             Map<String, Object> map=new HashMap<String, Object>();
-            map.put("img", appInfo.icon);
+            map.put("img", drawable);
             map.put("text", str_name);
 
             dataList.add(map);
