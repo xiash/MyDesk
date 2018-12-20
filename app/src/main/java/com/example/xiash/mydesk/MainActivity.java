@@ -42,20 +42,21 @@ public class MainActivity extends AppCompatActivity {
 
         gridView = (GridView) findViewById(R.id.gridApp);
         pm=this.getPackageManager();
-        appList.queryFilterAppInfo(pm);
-        fillData();
+//        appList.queryFilterAppInfo(pm);
+//        fillData();
+        initApp();
+        gotoSetting();
 
+//        if (!isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
+//            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+//            startActivity(intent);
+//        }
+//        else
+//        {
+//            intent = new Intent(MainActivity.this, ListeningService.class);
+//            startService(intent);
+//        }
 
-        if (!isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
-            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            startActivity(intent);
-        }
-        else
-        {
-            intent = new Intent(MainActivity.this, ListeningService.class);
-            startService(intent);
-        }
-//        gotoSetting();
     }
 
     @Override
@@ -195,5 +196,43 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this,AppSetting.class);
         startActivity(intent);
+    }
+    //初始化已安装
+    private void initApp() {
+        AppList list = new AppList();
+        list.queryFilterAppInfo(pm);
+
+        ((MyApplication) getApplication()).AppList = list.appList;
+        DatabaseUtil dbUtils = new DatabaseUtil();
+        //dbUtils.clearApplist(getApplicationContext());
+        //清理数据库中新增和卸载的app项
+
+        if(dbUtils.getAppcount(getApplicationContext())>0) {
+            List<AppInfo> nList = clearList(dbUtils.getAppList(getApplicationContext()),list.appList);
+            dbUtils.updateApplist(getApplicationContext(), nList);
+        }
+        else
+            dbUtils.updateApplist(getApplicationContext(), list.appList);
+    }
+
+    //赋值intent和icon
+    public List<AppInfo> clearList(List<AppInfo> sqlList, List<AppInfo> inList) {
+        int sqlSize = sqlList.size();
+        int inSize = inList.size();
+
+        for(int y=0;y<inSize;y++) {
+            boolean ischeck=false;
+            for(int x=0;x<sqlSize;x++ ) {
+                if(sqlList.get(x).getPackageName().equals(inList.get(y).getPackageName())
+                        &&sqlList.get(x).getName().equals(inList.get(y).getName())) {
+                    ischeck=true;
+                    sqlList.get(x).installStage=-1;
+                    break;
+                }
+            }
+            if(!ischeck)
+                sqlList.add(inList.get(y));
+        }
+        return sqlList;
     }
 }

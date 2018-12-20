@@ -15,8 +15,13 @@ import java.util.Map;
 public class gridview_button_adapter extends BaseAdapter implements View.OnClickListener {
     private Context myContext;
     private LayoutInflater inflater;
-    public gridview_button_adapter (Context context, List<Map<String, Object>> appList) {
+    private DatabaseUtil dbUtils;
+    private List<AppInfo> apps;
+
+    public gridview_button_adapter (Context context, List<AppInfo> appList) {
         myContext=context;
+        this.apps = appList;
+        dbUtils = new DatabaseUtil();
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
@@ -32,7 +37,20 @@ public class gridview_button_adapter extends BaseAdapter implements View.OnClick
             holder = (ViewHolder) convertView.getTag();
         }
 
-        return null;
+        AppInfo appInfo = apps.get(i);
+        holder.icon.setImageDrawable(appInfo.getLogo());
+        holder.name.setText(appInfo.getName());
+
+        if(appInfo.getIsShow()==1)
+            holder.button.setText("隐藏");
+        else
+            holder.button.setText("显示");
+        holder.button.setOnClickListener(this);
+        holder.appName = appInfo.getName();
+        holder.packageName = appInfo.getPackageName();
+
+        convertView.setTag(holder);
+        return convertView;
     }
 
     @Override
@@ -51,31 +69,31 @@ public class gridview_button_adapter extends BaseAdapter implements View.OnClick
         View convertView = (View)view.getParent();
         ViewHolder viewHolder = (ViewHolder)convertView.getTag();
         String name = viewHolder.appName;
-
-        //dbUtils.setVisible(myContext, name, showType);
+        String packageName = viewHolder.packageName;
+        dbUtils.setVisible(myContext, name,packageName, showType);
     }
 
     class ViewHolder {
         ImageView icon;
         TextView name;
-        //ToggleButton mTogBtn;
         Button button;
         int appId;
         String appName;
+        String packageName;
     }
     @Override
     public int getCount() {
-        return 0;
+        return apps.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return apps.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return 0;
+        return i;
     }
 
 }

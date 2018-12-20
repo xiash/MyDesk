@@ -13,6 +13,8 @@ import java.util.Set;
 
 public class AppList {
     public List<ApplicationInfo> applicationInfos=new ArrayList<>();//app列表
+    public List<AppInfo> appList = new ArrayList<>();
+
     private PackageManager pm = null;
 
     public void queryFilterAppInfo(PackageManager packageManager)
@@ -36,11 +38,21 @@ public class AppList {
         for (ResolveInfo resolveInfo:resolveinfoList){
             allowPackages.add(resolveInfo.activityInfo.packageName);
         }
-
+        int i=0;
         for (ApplicationInfo app:appInfos) {
             if(isUserApp(app))
             {
                 applicationInfos.add(app);
+                i++;
+                AppInfo appInfo = new AppInfo();
+                appInfo.setName(app.loadLabel(pm).toString());
+                appInfo.setPackageName(app.packageName);
+                appInfo.setIntent(pm.getLaunchIntentForPackage(app.packageName));
+                appInfo.setLogo(app.loadIcon(pm));
+                appInfo.installStage = 1;
+                appInfo.appId = i;
+
+                appList.add(appInfo);
             }
 
 //            if (allowPackages.contains(app.packageName)){
