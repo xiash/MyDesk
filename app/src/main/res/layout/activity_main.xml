@@ -5,7 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
+    <LinearLayout
+        android:id="@+id/iconArea"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        >
+        <ImageView
+            android:id="@+id/title_img"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@mipmap/t96title"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:text="办公系统"
+            android:textSize="56dp"/>
+    </LinearLayout>
     <GridView
         android:id="@+id/gridApp"
         android:layout_width="match_parent"
@@ -13,6 +28,8 @@
         android:columnWidth="100dp"
         android:stretchMode="spacingWidthUniform"
         android:numColumns="3"
+        app:layout_constraintTop_toBottomOf="@+id/iconArea"
+        android:layout_marginBottom="100dp"
         />
 
 </android.support.constraint.ConstraintLayout>

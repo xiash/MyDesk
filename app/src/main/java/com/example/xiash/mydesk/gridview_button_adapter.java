@@ -27,15 +27,17 @@ public class gridview_button_adapter extends BaseAdapter implements View.OnClick
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         ViewHolder holder;
-        if(convertView == null) {
-            holder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.gridview_button_item, viewGroup);
-            holder.icon = (ImageView) convertView.findViewById(R.id.img);
-            holder.name = (TextView) convertView.findViewById(R.id.text);
-            holder.button = (Button) convertView.findViewById(R.id.show_btn);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
+        try {
+            if (convertView == null) {
+                holder = new ViewHolder();
+                convertView = inflater.inflate(R.layout.gridview_button_item, null);
+                holder.icon = (ImageView) convertView.findViewById(R.id.img);
+                holder.name = (TextView) convertView.findViewById(R.id.text);
+                holder.button = (Button) convertView.findViewById(R.id.show_btn);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
 
         AppInfo appInfo = apps.get(i);
         holder.icon.setImageDrawable(appInfo.getLogo());
@@ -50,6 +52,9 @@ public class gridview_button_adapter extends BaseAdapter implements View.OnClick
         holder.packageName = appInfo.getPackageName();
 
         convertView.setTag(holder);
+        }catch(Exception e){
+            String err = e.getMessage();
+        }
         return convertView;
     }
 

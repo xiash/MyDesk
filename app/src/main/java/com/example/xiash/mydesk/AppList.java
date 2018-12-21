@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 public class AppList {
-    public List<ApplicationInfo> applicationInfos=new ArrayList<>();//app列表
-    public List<AppInfo> appList = new ArrayList<>();
+    public List<ApplicationInfo> applicationInfos=new ArrayList<>();//系统内安装的app列表
+    public List<AppInfo> appList = new ArrayList<>();   //系统内安装的app列表
 
     private PackageManager pm = null;
 

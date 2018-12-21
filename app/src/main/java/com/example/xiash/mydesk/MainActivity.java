@@ -3,8 +3,10 @@ package com.example.xiash.mydesk;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,10 +14,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,24 +33,41 @@ public class MainActivity extends AppCompatActivity {
 
     private GridView gridView;
     private List<Map<String, Object>> dataList;
+    private List<AppInfo> showList;
     private SimpleAdapter adapter;
     AppList appList=new AppList();
     PackageManager pm;
-
+    long[] mHits = new long[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         gridView = (GridView) findViewById(R.id.gridApp);
         pm=this.getPackageManager();
-//        appList.queryFilterAppInfo(pm);
-//        fillData();
-        initApp();
-        gotoSetting();
 
+        ImageView image = (ImageView) findViewById(R.id.title_img);
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                //给数组的最后赋当前时钟值
+                mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+                //当0出的值大于当前时间-500时 证明在500秒内点击了2次
+                if(mHits[0] > SystemClock.uptimeMillis() - 1000){
+                    //Toast.makeText(MainActivity.this, "被双击了", Toast.LENGTH_SHORT).show();
+                    gotoSetting();
+                }
+            }
+        });
+
+        //更新list
+        initApp();
+        //gotoSetting();
+
+        //显示app
+        fillData();
 //        if (!isAccessibilitySettingsOn(MainActivity.this, ListeningService.class.getCanonicalName())) {
 //            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
 //            startActivity(intent);
@@ -136,39 +157,22 @@ public class MainActivity extends AppCompatActivity {
         //初始化数据
         initData();
 
-        String[] from = {"img", "text"};
+        gridview_adapter adapter = new gridview_adapter(this, showList);
 
-        int[] to = new int[]{R.id.img, R.id.text};
-
-        adapter = new SimpleAdapter(this, dataList, R.layout.gridview_item, from, to);
-
-        adapter.setViewBinder(new SimpleAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Object data, String arg2) {
-                if(view instanceof ImageView && data instanceof Drawable){
-                    ImageView iv = (ImageView)view;
-                    iv.setImageDrawable((Drawable)data);
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-        });
         try {
             gridView.setAdapter(adapter);
         }
         catch (Exception e){
-           String str= e.getMessage();
+            String str= e.getMessage();
         }
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                    long arg3) {
-                String name = dataList.get(arg2).get("text").toString();
-                String packgeName = appList.getPackgeName(name);
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                String packgeName = showList.get(arg2).getPackageName();
                 if (packgeName != "") {
                     Intent intent = new Intent();
-                    intent = pm.getLaunchIntentForPackage(packgeName);
+                    intent = showList.get(arg2).getIntent();
                     startActivity(intent);
                 }
             }
@@ -177,18 +181,18 @@ public class MainActivity extends AppCompatActivity {
 
     void initData() {
         dataList = new ArrayList<Map<String, Object>>();
-        for (int i = 0; i <appList.applicationInfos.size(); i++) {
-            ApplicationInfo appInfo=appList.applicationInfos.get(i);
-            if(appInfo.icon==0) {
-                continue;
-            }
-            String str_name = appInfo.loadLabel(pm).toString();
-            Drawable drawable=appInfo.loadIcon(pm);
-            Map<String, Object> map=new HashMap<String, Object>();
-            map.put("img", drawable);
-            map.put("text", str_name);
+        DatabaseUtil DbUtils = new DatabaseUtil();
+        showList = DbUtils.getShowList(getApplicationContext());
 
-            dataList.add(map);
+        for(int t=0;t<showList.size();t++) {
+            String packageName = showList.get(t).getPackageName();
+            try {
+                PackageInfo packageInfo = pm.getPackageInfo(packageName,0);
+                showList.get(t).setIntent(pm.getLaunchIntentForPackage(packageName));
+                showList.get(t).setLogo(packageInfo.applicationInfo.loadIcon(pm));
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -206,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
         DatabaseUtil dbUtils = new DatabaseUtil();
         //dbUtils.clearApplist(getApplicationContext());
         //清理数据库中新增和卸载的app项
-
         if(dbUtils.getAppcount(getApplicationContext())>0) {
             List<AppInfo> nList = clearList(dbUtils.getAppList(getApplicationContext()),list.appList);
             dbUtils.updateApplist(getApplicationContext(), nList);

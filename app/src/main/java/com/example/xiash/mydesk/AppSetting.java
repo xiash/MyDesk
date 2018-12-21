@@ -17,13 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AppSetting extends AppCompatActivity {
+    public class AppSetting extends AppCompatActivity {
 
-    private GridView gridView;
-    private List<Map<String, Object>> dataList;
-    private List<AppInfo> appList;
-    private SimpleAdapter adapter;
-    PackageManager pm;
+        private GridView gridView;
+        private List<Map<String, Object>> dataList;
+        private List<AppInfo> appList;
+        private SimpleAdapter adapter;
+        PackageManager pm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
